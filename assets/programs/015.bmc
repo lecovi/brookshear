@@ -1,0 +1,18 @@
+# EJ015: Cargar en la última fila de la memoria los números del 0 al 15.
+# Inicio del programa
+2010  # R0 = 16: el registro R0 va a ser el límite
+2101  # R1 = 1: el registro R1 va a ser el incremento
+2200  # R2 = 0: el regsitor R2 va a ser el contador
+# Programa
+32f0  # R2 -> 0xf0: Esta instrucción pone los números en la última fila de la memoria
+5212  # R2 = R1+R2: Suma en CA2 a R1 y R2 y guarda el resultado en el registro R2
+## Arrancamos el ciclo, con la condición de corte:
+b214  # Salta a la dirección 0x14 ("24f0") si R2 == R0
+1307  # 0x07 -> R3: Carga el registro R3 con el contenido de la posición 0x07
+5313  # R3 = R1+R3: Suma en CA2 a R1 y R3 y guarda el resultado en el registro R3
+3307  # R3 -> 0x07: Copia el registro R3 en la dirección de memoria 0x07
+b006  # Salta incondicionalmente a la dirección 0x06
+# Fin del programa
+24f0  # R2 = 0xf0: Carga el registro R2 con el valor 0xf0
+3407  # R4 -> 0x07: Copia el registro R4 en la dirección de memoria 0x07
+c000  # Termina el programa
