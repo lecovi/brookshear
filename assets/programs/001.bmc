@@ -1,0 +1,28 @@
+B004  # Salta directamente a la posición 0x04
+0400  # No son instrucciones válidas, se están usando para guardar: 0x04 y 0x00
+2A01  # RA = 1 
+2BFF  # RB = 255 (0xFF) 
+2C80  # RC = 128 (0x80) 
+1102  # R1 = 4 <- Lo que hay en la posición de memoria 0x02 lo pone en R1.
+2001  # R0 = 1
+2200  # R2 = 0
+2301  # R3 = 1
+# Bucle
+B12E  # R1 == R0: salta a la memoria 0x2E (línea 26: 0x522A). Salta a fin si R1 == 1. 
+522A  # R2 = R2 + RA (incremento R2) 
+4015  # R5 = R1
+533A  # R3 = R3 + RA (incremento R3)
+1202  # Lo que hay en 0x02 lo pone en R2
+B32E  # R3 == R0: salta a la memoria 0x2E (línea 26: 0x522A)
+943B  # R4 = R3 XOR RB: Obtenemos el complemento a 1 de R3 y lo dejamos en R4
+544A  # R4 = R4 + RC: Sumamos 128 a R4 (que es el complemento a 1 de R3)
+5545  # R5 = R5 + R4: Sumamos R4 a R5
+2000  # R0 = 0
+B514  # R5 == R0: salta a la memoria 0x14 (Instrucción en la línea 12: 0x522A)
+865C  # R6 = R5 AND RC: Obtenemos el bit más significativo de R5
+B622  # R6 == R0: salta a la memoria 0x22 (Instrucción en la línea 19: 0x5545)
+B016  # Salta a 0x16 (Instrucción en la línea 13: 0x4015)
+# Fin del bucle
+522A  # R2 = R2 + RA
+3203  # [03] = R2
+C000  # HALT

@@ -9,6 +9,7 @@ class BrookshearMachine:
         self.ir = 0  # Instruction register
         self.debug = False
         self._program = []
+        self._cycle = 0
 
     def open_program(self, filename: str):
         """Opens a machine code program file and loads it into memory."""
@@ -68,8 +69,8 @@ class BrookshearMachine:
                     print(f"MOV [{x:02X}], R{r:X} => [{x:02X}]={self.registers[r]:02X}")
 
             case 4:  # MOVE
-                r, s, t = (instruction >> 8) & 0xF, (instruction >> 4) & 0xF, instruction & 0xF
-                if r != 0:
+                t, r, s = (instruction >> 8) & 0xF, (instruction >> 4) & 0xF, instruction & 0xF
+                if t != 0:
                     raise ValueError("MOV instruction with opcode 4 must followed with 0, then origin register and target register as operands 40RS")
                 self.registers[s] = self.registers[r]
 
@@ -137,8 +138,11 @@ class BrookshearMachine:
                         print("HALT")
                     return  # Exit the run loop
                 else:
+                    self.show_all(instruction)
                     raise ValueError(f"Invalid HALT instruction: {instruction}")
             case _:
+                self.show_all(instruction)
+
                 raise ValueError(f"Invalid opcode: {instruction >> 12}")
 
     def float_add(self, a, b):
@@ -173,18 +177,24 @@ class BrookshearMachine:
                 print(f"{self.memory[i + j]:02X} ", end="")
             print()
 
+    def show_all(self, instruction):
+        print(f"Executed instruction: {instruction:04X}", end="")
+        print(f"  IR: {self.ir:04X}", end="")
+        print(f"  PC: {self.pc:02X}")
+        self.show_registers()
+        self.show_memory()
+        print("Cycles:", self._cycle)
+
+
     def run(self, step_by_step=False):
         """Runs the loaded program."""
         while True:
+            self._cycle += 1
             instruction = self.fetch()
             self.decode_and_execute(instruction)
 
             if self.debug or step_by_step:
-                print(f"Executed instruction: {instruction:04X}", end="")
-                print(f"  IR: {self.ir:04X}", end="")
-                print(f"  PC: {self.pc:02X}")
-                self.show_registers()
-                self.show_memory()
+                self.show_all(instruction)
                 input("Press Enter to continue...")
 
             if instruction == 0xC000:  # HALT
